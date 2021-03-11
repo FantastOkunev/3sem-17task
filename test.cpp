@@ -4,7 +4,7 @@
 
 using namespace std;
 
-class CFabricData; //fdososfjds
+class CFabricData;
 
 class CPoly2
 {
