@@ -1,0 +1,9 @@
+0 output.txt
+1 output.txt
+1 output.txt
+1 output.txt
+0 output.txt
+1 output.txt
+1 output.txt
+0 output.txt
+1 output.txt

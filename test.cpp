@@ -18,10 +18,10 @@ private:
 	{
 		for (int i = 0; i < N; i++)
 		{
-			delete arr[i];
+			delete[] arr[i];
 			arr[i] = nullptr;
 		}
-		delete arr;
+		delete[] arr;
 		arr = nullptr;
 	}
 
@@ -161,7 +161,7 @@ public:
 	}
 	~CData0()
 	{
-		delete fname;
+		delete[] fname;
 	}
 
 	int output()
@@ -191,7 +191,7 @@ public:
 	}
 	~CData1()
 	{
-		delete fname;
+		delete[] fname;
 	}
 
 	int output()
@@ -247,7 +247,6 @@ CPoly2 *CPoly2::CreateData(char *str, CFabricData **f)
 	fname = new char[strlen(pch) + 1];
 
 	strcpy(fname, pch);
-	cout << fname << " ";
 
 	for (int i = 0; i < N; i++)
 	{
@@ -267,45 +266,46 @@ CPoly2 *CPoly2::CreateData(char *str, CFabricData **f)
 int main()
 {
 
-	int len_arr = 0, size_arr = 4;
+	int len_parr = 0, size_parr = 4;
 	char str[32];
 
 	ifstream fin("input.txt");
 
 	CFabricData *f[2] = {new CFabricData0(), new CFabricData1()};
-	CPoly2 **arr = new CPoly2 *[size_arr], **tmp_arr = nullptr;
+	CPoly2 **parr = new CPoly2 *[size_parr], **tmp_parr = nullptr;
 
 	while (fin.getline(str, 31))
 	{
 
-		arr[len_arr] = CPoly2::CreateData(str, f);
-		len_arr++;
-		if (len_arr == size_arr)
+		parr[len_parr] = CPoly2::CreateData(str, f);
+		len_parr++;
+		if (len_parr == size_parr)
 		{
-			size_arr *= 2;
-			tmp_arr = new CPoly2 *[size_arr];
-			for (int i = 0; i < len_arr; i++)
+			size_parr *= 2;
+			tmp_parr = new CPoly2 *[size_parr];
+			for (int i = 0; i < len_parr; i++)
 			{
-				tmp_arr[i] = arr[i];
+				tmp_parr[i] = parr[i];
 			}
-			delete arr;
-			arr = tmp_arr;
+			cout << parr;
+			delete[] parr;
+			parr = tmp_parr;
 		}
 	};
 	fin.close();
 
-	for (int i = 0; i < len_arr; i++)
+	for (int i = 0; i < len_parr; i++)
 	{
-		arr[i]->output();
+		parr[i]->output();
 	}
 
-	for (int i = 0; i < len_arr; i++)
+	for (int i = 0; i < len_parr; i++)
 	{
-		delete arr[i];
-		arr[i] = nullptr;
+		delete parr[i];
+		parr[i] = nullptr;
 	}
-	delete arr;
-	arr = nullptr;
+	delete[] parr;
+	parr = nullptr;
 
 	for (int i = 0; i < 2; i++)
 	{
