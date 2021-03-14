@@ -269,9 +269,19 @@ CPoly2 *CPoly2::CreateData(char *str, CFabricData **f)
 	int *tmp_arr = new int[size_tmp_arr];
 	int *tmp_tmp_arr = nullptr;
 	char *pch = strtok(str, " \r"), *fname = nullptr;
+	if (pch == 0)
+	{
+		delete[] tmp_arr;
+		return nullptr;
+	}
 	if (pch[0] == '0')
 		I = 0;
 	pch = strtok(nullptr, " \r");
+	if (pch == 0)
+	{
+		delete[] tmp_arr;
+		return nullptr;
+	}
 	fname = new char[strlen(pch) + 1];
 	strcpy(fname, pch);
 
@@ -290,6 +300,12 @@ CPoly2 *CPoly2::CreateData(char *str, CFabricData **f)
 			delete[] tmp_arr;
 			tmp_arr = tmp_tmp_arr;
 		}
+	}
+	if (len_tmp_arr == 0)
+	{
+		delete[] fname;
+		delete[] tmp_arr;
+		return nullptr;
 	}
 	for (int i = len_tmp_arr; i < size_tmp_arr; i++)
 	{
@@ -331,7 +347,8 @@ int main()
 	{
 
 		parr[len_parr] = CPoly2::CreateData(str, f);
-		len_parr++;
+		if (parr[len_parr] != 0)
+			len_parr++;
 		if (len_parr == size_parr)
 		{
 			size_parr *= 2;
