@@ -1,9 +1,10 @@
-0 output.txt
-1 output.txt
-1 output.txt
-1 output.txt
-0 output.txt
-1 output.txt
-1 output.txt
-0 output.txt
-1 output.txt
+0 output.txt 12 
+1 output.txt 24 4 
+1 output.txt 24 4 4 
+1 output.txt 24 4 4 46 
+1 output.txt 24 4 4 46  7 
+1 output.txt 24 4 4 46  7 43 5
+1 output.txt 24 4 4 46  7 43  9 29
+1 output.txt 24 4 4 46  7 43  9 29 5
+1 output.txt 24 4 4 46  7 43  9 29 4 3
+1 output.txt 24 4 4 46  7 43  9 29 6 3 3

@@ -1,6 +1,7 @@
 #include <iostream>
 #include <fstream>
 #include <cstring>
+#include <cmath>
 
 using namespace std;
 
@@ -23,6 +24,32 @@ private:
 		}
 		delete[] arr;
 		arr = nullptr;
+	}
+	static int digit(char *str)
+	{
+		int d = 0;
+		char *uk = str;
+		while (*uk != '\0')
+		{
+			d *= 10;
+			d += (int)*uk - 48;
+			uk++;
+		}
+		return d;
+	}
+
+	static int ssqrt(int N)
+	{
+		int n = N, k = 0, m;
+		while (n - k > 1)
+		{
+			m = (n + k) / 2;
+			if (m * m >= N)
+				n = m;
+			else
+				k = m;
+		}
+		return n;
 	}
 
 public:
@@ -237,25 +264,51 @@ class CFabricData1 : public CFabricData
 CPoly2 *CPoly2::CreateData(char *str, CFabricData **f)
 {
 	CPoly2 *tmp = nullptr;
-	int N = 2, I = 1;
-	int **arr = new int *[N];
-	char *pch = strtok(str, " "), *fname = nullptr;
+	int N = 2, I = 1, len_tmp_arr = 0, size_tmp_arr = 4;
+	int **arr = nullptr;
+	int *tmp_arr = new int[size_tmp_arr];
+	int *tmp_tmp_arr = nullptr;
+	char *pch = strtok(str, " \r"), *fname = nullptr;
 	if (pch[0] == '0')
 		I = 0;
-	pch = strtok(nullptr, " ");
-	N *= 1;
+	pch = strtok(nullptr, " \r");
 	fname = new char[strlen(pch) + 1];
-
 	strcpy(fname, pch);
 
+	while ((pch = strtok(nullptr, " \r")))
+	{
+		tmp_arr[len_tmp_arr] = digit(pch);
+		len_tmp_arr++;
+		if (len_tmp_arr == size_tmp_arr)
+		{
+			size_tmp_arr *= 2;
+			tmp_tmp_arr = new int[size_tmp_arr];
+			for (int i = 0; i < len_tmp_arr; i++)
+			{
+				tmp_tmp_arr[i] = tmp_arr[i];
+			}
+			delete[] tmp_arr;
+			tmp_arr = tmp_tmp_arr;
+		}
+	}
+	for (int i = len_tmp_arr; i < size_tmp_arr; i++)
+	{
+		tmp_arr[i] = 0;
+	}
+	N = ssqrt(len_tmp_arr);
+	arr = new int *[N];
 	for (int i = 0; i < N; i++)
 	{
 		arr[i] = new int[N];
 		for (int j = 0; j < N; j++)
 		{
-			arr[i][j] = i * N + j;
+			if (i * N + j < size_tmp_arr)
+				arr[i][j] = tmp_arr[i * N + j];
+			else
+				arr[i][j] = 0;
 		}
 	}
+	delete[] tmp_arr;
 	if (I == 0)
 		tmp = f[0]->create(fname, arr, N);
 	else
@@ -287,11 +340,10 @@ int main()
 			{
 				tmp_parr[i] = parr[i];
 			}
-			cout << parr;
 			delete[] parr;
 			parr = tmp_parr;
 		}
-	};
+	}
 	fin.close();
 
 	for (int i = 0; i < len_parr; i++)
