@@ -9,7 +9,7 @@ class CFabricData;
 
 class CPoly2
 {
-protected:
+public:
 	int **arr = nullptr;
 
 	int N = 0;
@@ -62,7 +62,7 @@ public:
 	{
 		delete_arr();
 	}
-	/*
+
 	CPoly2(const CPoly2 &other)
 	{
 		N = other.N;
@@ -110,10 +110,30 @@ public:
 		arr = other.arr;
 		return *this;
 	}
-	CPoly2 operator+(const CPoly2 &other)
+
+	virtual int output() = 0;
+	static CPoly2 *CreateData(char *, CFabricData **);
+};
+
+class CData0 : public CPoly2
+{
+public:
+	const char *fname = nullptr;
+
+	CData0(const char *str, int **arr, int N) : CPoly2(arr, N)
 	{
-		int sum_N = max(N, other.N);
-		int **sum_arr = new int *[sum_N];
+		fname = str;
+	}
+	~CData0()
+	{
+		delete[] fname;
+	}
+	CData0 operator+(const CData0 &other)
+	{
+		int N_sum = max(N, other.N);
+		int **arr_sum = new int *[N_sum];
+		char *fname_sum = new char[strlen(fname)];
+		strcpy(fname_sum, fname);
 		arr = new int *[N];
 		for (int i = 0; i < N; i++)
 		{
@@ -127,12 +147,14 @@ public:
 					arr[i][j] += arr[i][j];
 			}
 		}
-		return CPoly2(sum_arr, sum_N);
+
+		return CData0(fname_sum, arr_sum, N_sum);
 	}
-	CPoly2 operator-(const CPoly2 &other)
+	/*
+	CData0 operator-(const CData0 &other)
 	{
-		int sum_N = max(N, other.N);
-		int **sum_arr = new int *[sum_N];
+		int N_sum = max(N, other.N);
+		int **arr_sum = new int *[N_sum];
 		arr = new int *[N];
 		for (int i = 0; i < N; i++)
 		{
@@ -146,9 +168,9 @@ public:
 					arr[i][j] += arr[i][j];
 			}
 		}
-		return CPoly2(sum_arr, sum_N);
+		return CData0(arr_sum, N_sum);
 	}
-	CPoly2 operator--(void)
+	CData0 operator--(void)
 	{
 		for (int i = 0; i < N; i++)
 		{
@@ -160,7 +182,7 @@ public:
 		}
 		return *this;
 	}
-	CPoly2 operator++(void)
+	CData0 operator++(void)
 	{
 		for (int i = 0; i < N; i++)
 		{
@@ -173,23 +195,6 @@ public:
 		return *this;
 	}
 	*/
-	virtual int output() = 0;
-	static CPoly2 *CreateData(char *, CFabricData **);
-};
-
-class CData0 : public CPoly2
-{
-	const char *fname = nullptr;
-
-public:
-	CData0(const char *str, int **arr, int N) : CPoly2(arr, N)
-	{
-		fname = str;
-	}
-	~CData0()
-	{
-		delete[] fname;
-	}
 
 	int output()
 	{
@@ -209,9 +214,9 @@ public:
 
 class CData1 : public CPoly2
 {
+public:
 	const char *fname = nullptr;
 
-public:
 	CData1(const char *str, int **arr, int N) : CPoly2(arr, N)
 	{
 		fname = str;
@@ -332,6 +337,27 @@ CPoly2 *CPoly2::CreateData(char *str, CFabricData **f)
 	return tmp;
 }
 
+CData0 operator+(CData0 &first, CPoly2 &second)
+{
+	int N_sum = max(first.N, second.N);
+	int **arr_sum = new int *[N_sum];
+	char *fname_sum = new char[strlen(first.fname)];
+	strcpy(fname_sum, first.fname);
+	for (int i = 0; i < N_sum; i++)
+	{
+		arr_sum[i] = new int[N_sum];
+		for (int j = 0; j < N_sum; j++)
+		{
+			arr_sum[i][j] = 0;
+			if (i <= first.N and j <= first.N)
+				arr_sum[i][j] += first.arr[i][j];
+			if (i <= second.N and j <= second.N)
+				arr_sum[i][j] += second.arr[i][j];
+		}
+	}
+	return CData0(fname_sum, arr_sum, N_sum);
+}
+
 int main()
 {
 
@@ -362,12 +388,11 @@ int main()
 		}
 	}
 	fin.close();
-
 	for (int i = 0; i < len_parr; i++)
 	{
 		parr[i]->output();
 	}
-
+	(parr[0] + parr[1])->output();
 	for (int i = 0; i < len_parr; i++)
 	{
 		delete parr[i];
@@ -375,12 +400,10 @@ int main()
 	}
 	delete[] parr;
 	parr = nullptr;
-
 	for (int i = 0; i < 2; i++)
 	{
 		delete f[i];
 		f[i] = nullptr;
 	}
-
 	return 0;
 }
