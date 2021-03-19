@@ -114,14 +114,14 @@ public:
 		}
 		return *this;
 	}
-	CPoly2 &operator=(CPoly2 &&other)
-	{
-		delete_all();
-		N = other.N;
-		arr = other.arr;
-		cfname = other.cfname;
-		return *this;
-	}
+	// CPoly2 &operator=(CPoly2 &&other)
+	// {
+	// 	delete_all();
+	// 	N = other.N;
+	// 	arr = other.arr;
+	// 	cfname = other.cfname;
+	// 	return *this;
+	// }
 
 	virtual int output() = 0;
 	static CPoly2 *CreateData(char *, CFabricData **);
@@ -352,6 +352,78 @@ CData0 operator+(CPoly2 &first, CPoly2 &second)
 	return CData0(fname_sum, arr_sum, N_sum);
 }
 
+CData0 operator-(CPoly2 &first, CPoly2 &second)
+{
+	int N_sum = max(first.N, second.N);
+	int **arr_sum = new int *[N_sum];
+	char *fname_sum = new char[strlen(first.cfname) + 1];
+	strcpy(fname_sum, first.cfname);
+	for (int i = 0; i < N_sum; i++)
+	{
+		arr_sum[i] = new int[N_sum];
+		for (int j = 0; j < N_sum; j++)
+		{
+			arr_sum[i][j] = 0;
+			if (i < first.N and j < first.N)
+				arr_sum[i][j] += first.arr[i][j];
+			if (i < second.N and j < second.N)
+				arr_sum[i][j] -= second.arr[i][j];
+		}
+	}
+	return CData0(fname_sum, arr_sum, N_sum);
+}
+
+CData0 operator--(CPoly2 &th)
+{
+	for (int i = 0; i < th.N; i++)
+	{
+		for (int j = 0; j < th.N - 1; j++)
+		{
+			th.arr[i][j] = th.arr[i][j + 1];
+		}
+		th.arr[i][th.N - 1] = 0;
+	}
+	return th;
+}
+CData0 operator--(CPoly2 &th, int)
+{
+	CData0 tmp(th);
+	for (int i = 0; i < th.N; i++)
+	{
+		for (int j = 0; j < th.N - 1; j++)
+		{
+			th.arr[i][j] = th.arr[i][j + 1];
+		}
+		th.arr[i][th.N - 1] = 0;
+	}
+	return tmp;
+}
+CData0 operator++(CPoly2 &th)
+{
+	for (int i = 0; i < th.N; i++)
+	{
+		for (int j = 0; j < th.N - 1; j++)
+		{
+			th.arr[j][i] = th.arr[j + 1][i];
+		}
+		th.arr[i][th.N - 1] = 0;
+	}
+	return th;
+}
+CData0 operator++(CPoly2 &th, int)
+{
+	CData0 tmp(th);
+	for (int i = 0; i < th.N; i++)
+	{
+		for (int j = 0; j < th.N - 1; j++)
+		{
+			th.arr[j][i] = th.arr[j + 1][i];
+		}
+		th.arr[i][th.N - 1] = 0;
+	}
+	return tmp;
+}
+
 int main()
 {
 
@@ -395,6 +467,8 @@ int main()
 	// //------------------------------------------------
 	CPoly2 *tmp = new CData0(*parr[0]);
 	*tmp = *parr[0] + *parr[1];
+	tmp->output();
+	--(*tmp);
 	tmp->output();
 	delete tmp;
 	//------------------------------------------------
