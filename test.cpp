@@ -27,6 +27,7 @@ private:
 		arr = nullptr;
 		delete[] cfname;
 		cfname = nullptr;
+		N = 0;
 	}
 	static int digit(char *str)
 	{
@@ -212,7 +213,9 @@ public:
 	~CData1()
 	{
 	}
-
+	CData1(const CPoly2 &other) : CPoly2(other)
+	{
+	}
 	int output()
 	{
 		ofstream fout(cfname, ios_base::app);
@@ -331,7 +334,7 @@ CPoly2 *CPoly2::CreateData(char *str, CFabricData **f)
 	return tmp;
 }
 
-CData0 operator+(CPoly2 &first, CPoly2 &second)
+CData0 operator+(const CPoly2 &first, const CPoly2 &second)
 {
 	int N_sum = max(first.N, second.N);
 	int **arr_sum = new int *[N_sum];
@@ -349,10 +352,11 @@ CData0 operator+(CPoly2 &first, CPoly2 &second)
 				arr_sum[i][j] += second.arr[i][j];
 		}
 	}
-	return CData0(fname_sum, arr_sum, N_sum);
+	CData0 sum(fname_sum, arr_sum, N_sum);
+	return sum;
 }
 
-CData0 operator-(CPoly2 &first, CPoly2 &second)
+CData0 operator-(const CPoly2 &first, const CPoly2 &second)
 {
 	int N_sum = max(first.N, second.N);
 	int **arr_sum = new int *[N_sum];
@@ -467,8 +471,8 @@ int main()
 	// //------------------------------------------------
 	CPoly2 *tmp = new CData0(*parr[0]);
 	*tmp = *parr[0] + *parr[1];
-	tmp->output();
-	--(*tmp);
+	// tmp->output();
+	// --(*tmp);
 	tmp->output();
 	delete tmp;
 	//------------------------------------------------
