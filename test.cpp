@@ -69,6 +69,7 @@ public:
 	}
 	CPoly2(const CPoly2 &other)
 	{
+		cout << "конструктор копирования " << this << " " << &other << endl;
 		char *str = new char[strlen(other.cfname) + 1];
 		strcpy(str, other.cfname);
 		cfname = str;
@@ -85,6 +86,8 @@ public:
 	}
 	CPoly2(CPoly2 &&other)
 	{
+		cout << "конструктор перемещения " << this << " " << &other << endl;
+
 		cfname = other.cfname;
 		other.cfname = nullptr;
 		N = other.N;
@@ -94,6 +97,8 @@ public:
 	}
 	CPoly2 &operator=(const CPoly2 &other)
 	{
+		cout << "присваивание копированием " << this << " " << &other << endl;
+
 		if (this == &other)
 		{
 			cout << "a = a" << endl;
@@ -115,14 +120,16 @@ public:
 		}
 		return *this;
 	}
-	// CPoly2 &operator=(CPoly2 &&other)
-	// {
-	// 	delete_all();
-	// 	N = other.N;
-	// 	arr = other.arr;
-	// 	cfname = other.cfname;
-	// 	return *this;
-	// }
+	CPoly2 &operator=(CPoly2 &&other)
+	{
+		cout << "присваивание перемещением " << this << " " << &other << endl;
+
+		delete_all();
+		N = other.N;
+		arr = other.arr;
+		cfname = other.cfname;
+		return *this;
+	}
 
 	virtual int output() = 0;
 	static CPoly2 *CreateData(char *, CFabricData **);
@@ -133,60 +140,19 @@ class CData0 : public CPoly2
 public:
 	CData0(const char *str, int **arr, int N) : CPoly2(arr, N, str)
 	{
+		cout << "дочерний конструктор \n";
 	}
-	~CData0()
-	{
-	}
+	// ~CData0()
+	// {
+	// }
 
 	CData0(const CPoly2 &other) : CPoly2(other)
 	{
+		cout << "дочерний конструктор копирования \n";
 	}
-
-	/*
-	CData0 operator-(const CData0 &other)
-	{
-		int N_sum = max(N, other.N);
-		int **arr_sum = new int *[N_sum];
-		arr = new int *[N];
-		for (int i = 0; i < N; i++)
-		{
-			arr[i] = new int[N];
-			for (int j = 0; j < N; j++)
-			{
-				arr[i][j] = 0;
-				if (i <= other.N and j <= other.N)
-					arr[i][j] -= other.arr[i][j];
-				if (i <= other.N and j <= N)
-					arr[i][j] += arr[i][j];
-			}
-		}
-		return CData0(arr_sum, N_sum);
-	}
-	CData0 operator--(void)
-	{
-		for (int i = 0; i < N; i++)
-		{
-			for (int j = 0; j < N - 1; j++)
-			{
-				arr[i][j] = arr[i][j + 1];
-			}
-			arr[i][N - 1] = 0;
-		}
-		return *this;
-	}
-	CData0 operator++(void)
-	{
-		for (int i = 0; i < N; i++)
-		{
-			for (int j = 0; j < N - 1; j++)
-			{
-				arr[j][i] = arr[j + 1][i];
-			}
-			arr[N - 1][i] = 0;
-		}
-		return *this;
-	}
-	*/
+	// CData0(CPoly2 &&other) : CPoly2(other)
+	// {
+	// }
 
 	int output()
 	{
@@ -352,7 +318,9 @@ CData0 operator+(const CPoly2 &first, const CPoly2 &second)
 				arr_sum[i][j] += second.arr[i][j];
 		}
 	}
+	CData0 val(nullptr, nullptr, 0);
 	CData0 sum(fname_sum, arr_sum, N_sum);
+	cout << "end sum\n";
 	return sum;
 }
 
@@ -459,6 +427,8 @@ int main()
 		}
 	}
 	fin.close();
+	(*parr[0] + *parr[1]).output();
+	(*parr[0] + *parr[1]).output();
 	//------------------------------------------------
 	// CPoly2 *tmp = new CData0(*parr[0]);
 	// tmp->output();
