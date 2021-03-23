@@ -126,8 +126,11 @@ public:
 
 		delete_all();
 		N = other.N;
+		other.N = 0;
 		arr = other.arr;
+		other.arr = nullptr;
 		cfname = other.cfname;
+		other.cfname = nullptr;
 		return *this;
 	}
 
@@ -441,6 +444,7 @@ int main()
 	// //------------------------------------------------
 	CPoly2 *tmp = new CData0(*parr[0]);
 	*tmp = *parr[0] + *parr[1];
+	(*tmp)++;
 	// tmp->output();
 	// --(*tmp);
 	tmp->output();
