@@ -354,7 +354,7 @@ CData0 operator--(CPoly2 &th)
 	{
 		for (int j = 0; j < th.N - 1; j++)
 		{
-			th.arr[i][j] = th.arr[i][j + 1];
+			th.arr[i][j] = (j + 1) * th.arr[i][j + 1];
 		}
 		th.arr[i][th.N - 1] = 0;
 	}
@@ -367,7 +367,7 @@ CData0 operator--(CPoly2 &th, int)
 	{
 		for (int j = 0; j < th.N - 1; j++)
 		{
-			th.arr[i][j] = th.arr[i][j + 1];
+			th.arr[i][j] = (j + 1) * th.arr[i][j + 1];
 		}
 		th.arr[i][th.N - 1] = 0;
 	}
@@ -379,7 +379,7 @@ CData0 operator++(CPoly2 &th)
 	{
 		for (int j = 0; j < th.N - 1; j++)
 		{
-			th.arr[j][i] = th.arr[j + 1][i];
+			th.arr[j][i] = (j + 1) * th.arr[j + 1][i];
 		}
 		th.arr[i][th.N - 1] = 0;
 	}
@@ -392,7 +392,7 @@ CData0 operator++(CPoly2 &th, int)
 	{
 		for (int j = 0; j < th.N - 1; j++)
 		{
-			th.arr[j][i] = th.arr[j + 1][i];
+			th.arr[j][i] = (j + 1) * th.arr[j + 1][i];
 		}
 		th.arr[i][th.N - 1] = 0;
 	}
