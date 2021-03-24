@@ -277,7 +277,7 @@ CPoly2 *CPoly2::CreateData(char *str, CFabricData **f)
 		tmp_arr[i] = 0;
 	}
 	N = ssqrt(len_tmp_arr);
-	if (len_tmp_arr == 0)
+	if (len_tmp_arr != N * N)
 	{
 		delete[] fname;
 		delete[] tmp_arr;
@@ -403,7 +403,7 @@ int main()
 {
 
 	int len_parr = 0, size_parr = 4;
-	char str[32];
+	char str[128];
 	ofstream fout("output.txt", ios_base::trunc);
 	fout.close();
 	ifstream fin("input.txt");
@@ -411,7 +411,7 @@ int main()
 	CFabricData *f[2] = {new CFabricData0(), new CFabricData1()};
 	CPoly2 **parr = new CPoly2 *[size_parr], **tmp_parr = nullptr;
 
-	while (fin.getline(str, 31))
+	while (fin.getline(str, 127))
 	{
 
 		parr[len_parr] = CPoly2::CreateData(str, f);
@@ -430,8 +430,8 @@ int main()
 		}
 	}
 	fin.close();
-	(*parr[0] + *parr[1]).output();
-	(*parr[0] + *parr[1]).output();
+	// (*parr[0] + *parr[1]).output();
+	// (*parr[0] + *parr[1]).output();
 	//------------------------------------------------
 	// CPoly2 *tmp = new CData0(*parr[0]);
 	// tmp->output();
@@ -442,17 +442,26 @@ int main()
 	// tmp->output();
 	// delete tmp;
 	// //------------------------------------------------
-	CPoly2 *tmp = new CData0(*parr[0]);
-	*tmp = *parr[0] + *parr[1];
-	(*tmp)++;
+	// CPoly2 *tmp = new CData0(*parr[0]);
+	// *tmp = *parr[0] + *parr[1];
+	// (*tmp)++;
+	// // tmp->output();
+	// // --(*tmp);
 	// tmp->output();
-	// --(*tmp);
-	tmp->output();
-	delete tmp;
+	// delete tmp;
 	//------------------------------------------------
 	for (int i = 0; i < len_parr; i++)
 	{
 		parr[i]->output();
+	}
+	for (int i = 0; i < len_parr; i++)
+	{
+		parr[i] = parr[(i + 1) % len_parr];
+	}
+	for (int i = 0; i < len_parr; i++)
+	{
+		parr[i]++;
+		parr[i]--;
 	}
 	//*parr[1] = (*parr[0] + *parr[1]);
 	//len_parr++;
@@ -471,3 +480,8 @@ int main()
 
 	return 0;
 }
+// вот так записывается матрица 2 на 2
+// 1 y
+// x xy
+// ++ дифферинцирование по х
+// -- дифферинцирование по y
