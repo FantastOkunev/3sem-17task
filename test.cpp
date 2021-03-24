@@ -57,6 +57,9 @@ private:
 	}
 
 public:
+	CPoly2()
+	{
+	}
 	CPoly2(int **arr_, int N_, const char *cfname_)
 	{
 		arr = arr_;
@@ -141,6 +144,7 @@ public:
 class CData0 : public CPoly2
 {
 public:
+	CData0() : CPoly2() {}
 	CData0(const char *str, int **arr, int N) : CPoly2(arr, N, str)
 	{
 		cout << "дочерний конструктор \n";
@@ -176,6 +180,7 @@ public:
 class CData1 : public CPoly2
 {
 public:
+	CData1() : CPoly2() {}
 	CData1(const char *str, int **arr, int N) : CPoly2(arr, N, str)
 	{
 	}
@@ -430,41 +435,29 @@ int main()
 		}
 	}
 	fin.close();
-	// (*parr[0] + *parr[1]).output();
-	// (*parr[0] + *parr[1]).output();
-	//------------------------------------------------
-	// CPoly2 *tmp = new CData0(*parr[0]);
-	// tmp->output();
-	// delete tmp;
-	// //------------------------------------------------
-	// tmp = new CData0(*parr[0]);
-	// *tmp = *parr[1];
-	// tmp->output();
-	// delete tmp;
-	// //------------------------------------------------
-	// CPoly2 *tmp = new CData0(*parr[0]);
-	// *tmp = *parr[0] + *parr[1];
-	// (*tmp)++;
-	// // tmp->output();
-	// // --(*tmp);
-	// tmp->output();
-	// delete tmp;
-	//------------------------------------------------
 	for (int i = 0; i < len_parr; i++)
 	{
 		parr[i]->output();
 	}
+	CPoly2 *tmp = new CData0(*parr[0]);
+	for (int i = 0; i < len_parr - 1; i++)
+	{
+		*parr[i] = *parr[i + 1];
+	}
+	*parr[len_parr - 1] = *tmp;
+	//
 	for (int i = 0; i < len_parr; i++)
 	{
-		parr[i] = parr[(i + 1) % len_parr];
+		*tmp = *parr[i] + *tmp;
 	}
+	tmp->output();
+	delete tmp;
 	for (int i = 0; i < len_parr; i++)
 	{
 		parr[i]++;
 		parr[i]--;
 	}
-	//*parr[1] = (*parr[0] + *parr[1]);
-	//len_parr++;
+
 	for (int i = 0; i < len_parr; i++)
 	{
 		delete parr[i];
