@@ -59,6 +59,9 @@ private:
 public:
 	CPoly2()
 	{
+		N = 0;
+		arr = nullptr;
+		cfname = nullptr;
 	}
 	CPoly2(int **arr_, int N_, const char *cfname_)
 	{
@@ -163,6 +166,8 @@ public:
 
 	int output()
 	{
+		if (!cfname)
+			return 1;
 		ofstream fout(cfname, ios_base::app);
 		for (int i = 0; i < N; i++)
 		{
@@ -192,6 +197,8 @@ public:
 	}
 	int output()
 	{
+		if (!cfname)
+			return 1;
 		ofstream fout(cfname, ios_base::app);
 		for (int i = 0; i < N; i++)
 		{
@@ -386,7 +393,7 @@ CData0 operator++(CPoly2 &th)
 		{
 			th.arr[j][i] = (j + 1) * th.arr[j + 1][i];
 		}
-		th.arr[i][th.N - 1] = 0;
+		th.arr[th.N - 1][i] = 0;
 	}
 	return th;
 }
@@ -399,7 +406,7 @@ CData0 operator++(CPoly2 &th, int)
 		{
 			th.arr[j][i] = (j + 1) * th.arr[j + 1][i];
 		}
-		th.arr[i][th.N - 1] = 0;
+		th.arr[th.N - 1][i] = 0;
 	}
 	return tmp;
 }
@@ -445,19 +452,33 @@ int main()
 		*parr[i] = *parr[i + 1];
 	}
 	*parr[len_parr - 1] = *tmp;
-	//
+	CPoly2 *sum = new CData0();
+	sum->output();
 	for (int i = 0; i < len_parr; i++)
 	{
-		*tmp = *parr[i] + *tmp;
+		*sum = *parr[i] + *sum;
+		sum->output();
 	}
-	tmp->output();
+	sum->output();
 	delete tmp;
+	delete sum;
+
 	for (int i = 0; i < len_parr; i++)
 	{
-		parr[i]++;
-		parr[i]--;
+		(*parr[i])++;
 	}
-
+	for (int i = 0; i < len_parr; i++)
+	{
+		parr[i]->output();
+	}
+	for (int i = 0; i < len_parr; i++)
+	{
+		(*parr[i])--;
+	}
+	for (int i = 0; i < len_parr; i++)
+	{
+		parr[i]->output();
+	}
 	for (int i = 0; i < len_parr; i++)
 	{
 		delete parr[i];
@@ -473,6 +494,7 @@ int main()
 
 	return 0;
 }
+// вводится 1 y x xy
 // вот так записывается матрица 2 на 2
 // 1 y
 // x xy
