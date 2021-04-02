@@ -28,12 +28,17 @@ private:
 		cfname.resize(0);
 		N = 0;
 	}
-	static int digit(string str)
+	static int digit(string str, int &error)
 	{
 		int d = 0;
 		for (unsigned int i = 0; i < str.size(); i++)
 		{
 			d *= 10;
+			if (!isdigit(str[i]))
+			{
+				error = 1;
+				return d;
+			}
 			d += (int)str[i] - 48;
 		}
 		return d;
@@ -237,15 +242,20 @@ CPoly2 *CPoly2::CreateData(string str, CFabricData **f)
 		return nullptr;
 	}
 	fname = word;
-	s >> word;
+	int error = 0;
 	while (!s.eof())
 	{
-		tmp_arr.push_back(digit(word));
+		s >> word;
+		tmp_arr.push_back(digit(word, error));
+		if (error)
+		{
+			cout << "Ошибка: в строке из входного файла после имени файло введено не число" << endl;
+			return nullptr;
+		}
 		if (tmp_arr.size() == tmp_arr.capacity())
 		{
 			tmp_arr.reserve(tmp_arr.size() * 2);
 		}
-		s >> word;
 	}
 	if (tmp_arr.size() == 0)
 	{
@@ -409,45 +419,100 @@ int main()
 		{
 			parr[i]->output();
 		}
-		// 	CPoly2 *tmp = new CData0(*parr[0]);
-		// 	for (unsigned int i = 0; i < parr.size() - 1; i++)
-		// 	{
-		// 		*parr[i] = *parr[i + 1];
-		// 	}
-		// 	*parr[parr.size() - 1] = *tmp;
-		// 	CPoly2 *sum = new CData0();
-		// 	sum->output();
-		// 	for (unsigned int i = 0; i < parr.size(); i++)
-		// 	{
-		// 		*sum = *parr[i] + *sum;
-		// 		sum->output();
-		// 	}
-		// 	sum->output();
-		// 	delete tmp;
-		// 	delete sum;
+		for (unsigned int i = 0; i < parr.size(); i++)
+		{
+			(*parr[i])++;
+		}
+		for (unsigned int i = 0; i < parr.size(); i++)
+		{
+			parr[i]->output();
+		}
+		for (unsigned int i = 0; i < parr.size(); i++)
+		{
+			delete parr[i];
+			parr[i] = nullptr;
+		}
+	}
+	{
+		vector<CPoly2 *> parr;
+		parr.reserve(str_r.size());
+		for (unsigned int i = 0; i < str_r.size(); i++)
+		{
 
-		// 	for (unsigned int i = 0; i < parr.size(); i++)
-		// 	{
-		// 		(*parr[i])++;
-		// 	}
-		// 	for (unsigned int i = 0; i < parr.size(); i++)
-		// 	{
-		// 		parr[i]->output();
-		// 	}
-		// 	for (unsigned int i = 0; i < parr.size(); i++)
-		// 	{
-		// 		(*parr[i])--;
-		// 	}
-		// 	for (unsigned int i = 0; i < parr.size(); i++)
-		// 	{
-		// 		parr[i]->output();
-		// 	}
-		// 	for (unsigned int i = 0; i < parr.size(); i++)
-		// 	{
-		// 		delete parr[i];
-		// 		parr[i] = nullptr;
-		// 	}
-		//
+			parr.push_back(CPoly2::CreateData(str_r[i], f));
+			if (!parr.back())
+			{
+				parr.pop_back();
+			}
+		}
+		for (unsigned int i = 0; i < parr.size(); i++)
+		{
+			(*parr[i])--;
+		}
+		for (unsigned int i = 0; i < parr.size(); i++)
+		{
+			parr[i]->output();
+		}
+		for (unsigned int i = 0; i < parr.size(); i++)
+		{
+			delete parr[i];
+			parr[i] = nullptr;
+		}
+	}
+	{
+		vector<CPoly2 *> parr;
+		parr.reserve(str_r.size());
+		for (unsigned int i = 0; i < str_r.size(); i++)
+		{
+
+			parr.push_back(CPoly2::CreateData(str_r[i], f));
+			if (!parr.back())
+			{
+				parr.pop_back();
+			}
+		}
+		CPoly2 *sum = new CData0();
+		for (unsigned int i = 0; i < parr.size(); i++)
+		{
+			*sum = *parr[i] + *sum;
+		}
+		sum->output();
+		delete sum;
+		for (unsigned int i = 0; i < parr.size(); i++)
+		{
+			delete parr[i];
+			parr[i] = nullptr;
+		}
+	}
+	{
+		vector<CPoly2 *> parr;
+		parr.reserve(str_r.size());
+		for (unsigned int i = 0; i < str_r.size(); i++)
+		{
+
+			parr.push_back(CPoly2::CreateData(str_r[i], f));
+			if (!parr.back())
+			{
+				parr.pop_back();
+			}
+		}
+		CPoly2 *tmp = new CData0(*parr[0]);
+		for (unsigned int i = 0; i < parr.size() - 1; i++)
+		{
+			*parr[i] = *parr[i + 1];
+		}
+		*parr[parr.size() - 1] = *tmp;
+		delete tmp;
+
+		for (unsigned int i = 0; i < parr.size(); i++)
+		{
+			parr[i]->output();
+		}
+		for (unsigned int i = 0; i < parr.size(); i++)
+		{
+			delete parr[i];
+			parr[i] = nullptr;
+		}
 	}
 	for (unsigned int i = 0; i < 2; i++)
 	{
