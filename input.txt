@@ -1,9 +1,1 @@
-0 output.txt 1 2 3 4   
-1 output.txt 1 2 3 4                           
-0 output.txt 5 6 7 8             
-0 output.txt 1 1 1 1 1 1 1 1 1
-
-
-1
-2 output.txt 
-1 output.txt 4 4
+0 output.txt 1 2 3 4
