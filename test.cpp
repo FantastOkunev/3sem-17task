@@ -494,7 +494,7 @@ int main()
 		}
 		sum->output();
 		delete sum;
-		for (unsigned int i = 0; i < parr.size(); i++)
+		for (unsigned int i = 0; i < parr.size(); i++) //gjiis
 		{
 			delete parr[i];
 			parr[i] = nullptr;
