@@ -80,18 +80,18 @@ public:
 	{
 		delete_all();
 	}
-	CPoly2(const CPoly2 &other)
-	{
-		cout << "конструктор копирования " << this << " " << &other << endl;
+	CPoly2(const CPoly2 &other) = default;
+	// {
+	// 	cout << "конструктор копирования " << this << " " << &other << endl;
 
-		cfname = other.cfname;
-		N = other.N;
-		arr.resize(N);
-		for (int i = 0; i < N; i++)
-		{
-			arr[i] = other.arr[i];
-		}
-	}
+	// 	cfname = other.cfname;
+	// 	N = other.N;
+	// 	arr.resize(N);
+	// 	for (int i = 0; i < N; i++)
+	// 	{
+	// 		arr[i] = other.arr[i];
+	// 	}
+	// }
 	CPoly2(CPoly2 &&other)
 	{
 		cout << "конструктор перемещения " << this << " " << &other << endl;
@@ -101,20 +101,20 @@ public:
 		other.N = 0;
 		arr = move(other.arr);
 	}
-	CPoly2 &operator=(const CPoly2 &other)
-	{
-		cout << "присваивание копированием " << this << " " << &other << endl;
+	CPoly2 &operator=(const CPoly2 &other) = default;
+	// {
+	// 	cout << "присваивание копированием " << this << " " << &other << endl;
 
-		if (this == &other)
-		{
-			cout << "a = a" << endl;
-			return *this;
-		}
-		cfname = other.cfname;
-		N = other.N;
-		arr = other.arr;
-		return *this;
-	}
+	// 	if (this == &other)
+	// 	{
+	// 		cout << "a = a" << endl;
+	// 		return *this;
+	// 	}
+	// 	cfname = other.cfname;
+	// 	N = other.N;
+	// 	arr = other.arr;
+	// 	return *this;
+	// }
 	CPoly2 &operator=(CPoly2 &&other)
 	{
 		cout << "присваивание перемещением " << this << " " << &other << endl;

@@ -9,3 +9,6 @@
 1 output.txt
 0 output.txt 1 2
 0 output.txt 1 2 f
+11
+3
+-
