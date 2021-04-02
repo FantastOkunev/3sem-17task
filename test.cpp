@@ -4,6 +4,7 @@
 #include <cstring>
 #include <vector>
 #include <string>
+#include <iterator>
 
 using namespace std;
 
@@ -474,6 +475,7 @@ int main()
 	}
 	{
 		vector<CPoly2 *> parr;
+
 		parr.reserve(str_r.size());
 		for (unsigned int i = 0; i < str_r.size(); i++)
 		{
@@ -485,9 +487,10 @@ int main()
 			}
 		}
 		CPoly2 *sum = new CData0();
-		for (unsigned int i = 0; i < parr.size(); i++)
+
+		for (vector<CPoly2 *>::iterator i_parr = parr.begin(); i_parr != parr.end(); i_parr++)
 		{
-			*sum = *parr[i] + *sum;
+			*sum = **i_parr + *sum;
 		}
 		sum->output();
 		delete sum;
