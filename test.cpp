@@ -30,8 +30,14 @@ private:
 	}
 	static int digit(string str, int &error)
 	{
-		int d = 0;
-		for (unsigned int i = 0; i < str.size(); i++)
+		int d = 0, sgn = 1;
+		unsigned int i = 0;
+		if (str[0] == '-')
+		{
+			sgn = -1;
+			i++;
+		}
+		for (; i < str.size(); i++)
 		{
 			d *= 10;
 			if (!isdigit(str[i]))
@@ -41,7 +47,7 @@ private:
 			}
 			d += (int)str[i] - 48;
 		}
-		return d;
+		return d * sgn;
 	}
 
 	static int ssqrt(int N)
@@ -233,8 +239,15 @@ CPoly2 *CPoly2::CreateData(string str, CFabricData **f)
 		cout << "Ошибка: пустая строка" << endl;
 		return nullptr;
 	}
-	if (word[0] == '0')
+	if (word == "0")
 		I = 0;
+	else if (word == "1")
+		I = 1;
+	else
+	{
+		cout << "Ошибка: неверно указан тип вывода данных" << endl;
+		return nullptr;
+	}
 	s >> word;
 	if (word.empty())
 	{
