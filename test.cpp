@@ -5,6 +5,8 @@
 #include <vector>
 #include <string>
 #include <iterator>
+#include <ctime>
+#include <omp.h>
 
 using namespace std;
 
@@ -94,7 +96,7 @@ public:
 	// }
 	CPoly2(CPoly2 &&other)
 	{
-		cout << "конструктор перемещения " << this << " " << &other << endl;
+		// cout << "конструктор перемещения " << this << " " << &other << endl;
 
 		cfname = move(other.cfname);
 		N = other.N;
@@ -117,7 +119,7 @@ public:
 	// }
 	CPoly2 &operator=(CPoly2 &&other)
 	{
-		cout << "присваивание перемещением " << this << " " << &other << endl;
+		// cout << "присваивание перемещением " << this << " " << &other << endl;
 
 		delete_all();
 		N = other.N;
@@ -137,7 +139,7 @@ public:
 	CData0() : CPoly2() {}
 	CData0(string &fname, vector<vector<int>> &arr, int N) : CPoly2(fname, arr, N)
 	{
-		cout << "дочерний конструктор \n";
+		// cout << "дочерний конструктор \n";
 	}
 	// ~CData0()
 	// {
@@ -145,7 +147,7 @@ public:
 
 	CData0(const CPoly2 &other) : CPoly2(other)
 	{
-		cout << "дочерний конструктор копирования \n";
+		// cout << "дочерний конструктор копирования \n";
 	}
 	// CData0(CPoly2 &&other) : CPoly2(other)
 	// {
@@ -401,6 +403,7 @@ int main()
 #ifdef _OPENNP
 	cout << _OPENNP;
 #endif
+	time_t t1, t2;
 	ofstream fout("output.txt", ios_base::trunc);
 	fout.close();
 	CFabricData *f[2] = {new CFabricData0(), new CFabricData1()};
@@ -420,7 +423,7 @@ int main()
 	}
 
 	fin.close();
-	{
+	{ // ++
 		vector<CPoly2 *> parr;
 		parr.reserve(str_r.size());
 		for (unsigned int i = 0; i < str_r.size(); i++)
@@ -436,10 +439,13 @@ int main()
 		{
 			parr[i]->output();
 		}
+		time(&t1);
 		for (unsigned int i = 0; i < parr.size(); i++)
 		{
 			(*parr[i])++;
 		}
+		time(&t2);
+		cout << "++: " << t2 - t1 << endl;
 		for (unsigned int i = 0; i < parr.size(); i++)
 		{
 			parr[i]->output();
@@ -449,8 +455,9 @@ int main()
 			delete parr[i];
 			parr[i] = nullptr;
 		}
-	}
-	{
+	} // ++
+
+	{ // ++ par
 		vector<CPoly2 *> parr;
 		parr.reserve(str_r.size());
 		for (unsigned int i = 0; i < str_r.size(); i++)
@@ -462,10 +469,39 @@ int main()
 				parr.pop_back();
 			}
 		}
+		time(&t1);
+#pragma omp parallel for
+		for (unsigned int i = 0; i < parr.size(); i++)
+		{
+			(*parr[i])++;
+		}
+		time(&t2);
+		cout << "++ par: " << t2 - t1 << endl;
+		for (unsigned int i = 0; i < parr.size(); i++)
+		{
+			delete parr[i];
+			parr[i] = nullptr;
+		}
+	} // ++ par
+	{ // --
+		vector<CPoly2 *> parr;
+		parr.reserve(str_r.size());
+		for (unsigned int i = 0; i < str_r.size(); i++)
+		{
+
+			parr.push_back(CPoly2::CreateData(str_r[i], f));
+			if (!parr.back())
+			{
+				parr.pop_back();
+			}
+		}
+		time(&t1);
 		for (unsigned int i = 0; i < parr.size(); i++)
 		{
 			(*parr[i])--;
 		}
+		time(&t2);
+		cout << "--: " << t2 - t1 << endl;
 		for (unsigned int i = 0; i < parr.size(); i++)
 		{
 			parr[i]->output();
@@ -475,14 +511,173 @@ int main()
 			delete parr[i];
 			parr[i] = nullptr;
 		}
-	}
-	{
+	} // --
+	{ // -- par
+		vector<CPoly2 *> parr;
+		parr.reserve(str_r.size());
+		for (unsigned int i = 0; i < str_r.size(); i++)
+		{
+
+			parr.push_back(CPoly2::CreateData(str_r[i], f));
+			if (!parr.back())
+			{
+				parr.pop_back();
+			}
+		}
+		time(&t1);
+#pragma omp parallel for
+		for (unsigned int i = 0; i < parr.size(); i++)
+		{
+			(*parr[i])--;
+		}
+		time(&t2);
+		cout << "-- par: " << t2 - t1 << endl;
+		for (unsigned int i = 0; i < parr.size(); i++)
+		{
+			parr[i]->output();
+		}
+		for (unsigned int i = 0; i < parr.size(); i++)
+		{
+			delete parr[i];
+			parr[i] = nullptr;
+		}
+	} //-- par
+	// {
+	// 	vector<CPoly2 *> parr;
+	// 	parr.reserve(str_r.size());
+	// 	for (unsigned int i = 0; i < str_r.size(); i++)
+	// 	{
+	//
+	// 		parr.push_back(CPoly2::CreateData(str_r[i], f));
+	// 		if (!parr.back())
+	// 		{
+	// 			parr.pop_back();
+	// 		}
+	// 	}
+	// 	time(&t1);
+	// 	{
+	// 		vector<CPoly2 *> parr;
+	// 		parr.reserve(str_r.size());
+	// 		for (unsigned int i = 0; i < str_r.size(); i++)
+	// 		{
+	//
+	// 			parr.push_back(CPoly2::CreateData(str_r[i], f));
+	// 			if (!parr.back())
+	// 			{
+	// 				parr.pop_back();
+	// 			}
+	// 		}
+	// 		time(&t1);
+	// 		for (unsigned int i = 0; i < parr.size(); i++)
+	// 		{
+	// 			(*parr[i])--;
+	// 		}
+	// 		time(&t2);
+	// 		cout << "-- par: " << t2 - t1 << endl;
+	// 		for (unsigned int i = 0; i < parr.size(); i++)
+	// 		{
+	// 			parr[i]->output();
+	// 		}
+	// 		for (unsigned int i = 0; i < parr.size(); i++)
+	// 		{
+	// 			delete parr[i];
+	// 			parr[i] = nullptr;
+	// 		}
+	// 	}
+	// 	for (unsigned int i = 0; i < parr.size(); i++)
+	// 	{
+	// 		(*parr[i])--;
+	// 	}
+	// 	time(&t2);
+	// 	cout << "++ par: " << t2 - t1 << endl;
+	// 	for (unsigned int i = 0; i < parr.size(); i++)
+	// 	{
+	// 		parr[i]->output();
+	// 	}
+	// 	for (unsigned int i = 0; i < parr.size(); i++)
+	// 	{
+	// 		delete parr[i];
+	// 		parr[i] = nullptr;
+	// 	}
+	// }
+
+	{ //+
 		vector<CPoly2 *> parr;
 
 		parr.reserve(str_r.size());
 		for (unsigned int i = 0; i < str_r.size(); i++)
 		{
 
+			parr.push_back(CPoly2::CreateData(str_r[i], f));
+			if (!parr.back())
+			{
+				parr.pop_back();
+			}
+		}
+		CPoly2 *sum = new CData0();
+		time(&t1);
+
+		for (unsigned int i = 0; i < parr.size(); i++)
+		{
+			*sum = *parr[i] + *sum;
+		}
+
+		time(&t2);
+		cout << "+ : " << t2 - t1 << endl;
+		(*sum).output();
+		delete sum;
+		for (unsigned int i = 0; i < parr.size(); i++) //gjiis
+		{
+			delete parr[i];
+			parr[i] = nullptr;
+		}
+	} // +
+	{ // + par
+		vector<CPoly2 *> parr;
+
+		parr.reserve(str_r.size());
+		for (unsigned int i = 0; i < str_r.size(); i++)
+		{
+
+			parr.push_back(CPoly2::CreateData(str_r[i], f));
+			if (!parr.back())
+			{
+				parr.pop_back();
+			}
+		}
+		CPoly2 *sum = new CData0(), *sum1 = new CData0();
+		time(&t1);
+#pragma omp parallel sections shared(sum, sum1)
+		{
+#pragma omp section
+			for (unsigned int i = 0; i < parr.size() / 2; i++)
+			{
+				*sum = *parr[i] + *sum;
+			}
+#pragma omp section
+			for (unsigned int i = parr.size() / 2; i < parr.size(); i++)
+			{
+				*sum1 = *parr[i] + *sum1;
+			}
+		}
+		*sum = *sum + *sum1;
+		time(&t2);
+		cout << "+ par: " << t2 - t1 << endl;
+		(*sum).output();
+		delete sum;
+		delete sum1;
+		for (unsigned int i = 0; i < parr.size(); i++) //gjiis
+		{
+			delete parr[i];
+			parr[i] = nullptr;
+		}
+	} // + par
+	{
+		vector<CPoly2 *> parr;
+
+		parr.reserve(str_r.size());
+		for (unsigned int i = 0; i < str_r.size(); i++)
+		{
 			parr.push_back(CPoly2::CreateData(str_r[i], f));
 			if (!parr.back())
 			{
