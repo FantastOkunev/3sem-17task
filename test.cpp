@@ -398,6 +398,9 @@ CData0 operator++(CPoly2 &th, int)
 
 int main()
 {
+#ifdef _OPENNP
+	cout << _OPENNP;
+#endif
 	ofstream fout("output.txt", ios_base::trunc);
 	fout.close();
 	CFabricData *f[2] = {new CFabricData0(), new CFabricData1()};
