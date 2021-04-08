@@ -421,8 +421,6 @@ int main()
 			str_r.reserve(str_r.size() * 2);
 		}
 	}
-
-	fin.close();
 	{ // ++
 		vector<CPoly2 *> parr;
 		parr.reserve(str_r.size());
@@ -542,65 +540,6 @@ int main()
 			parr[i] = nullptr;
 		}
 	} //-- par
-	// {
-	// 	vector<CPoly2 *> parr;
-	// 	parr.reserve(str_r.size());
-	// 	for (unsigned int i = 0; i < str_r.size(); i++)
-	// 	{
-	//
-	// 		parr.push_back(CPoly2::CreateData(str_r[i], f));
-	// 		if (!parr.back())
-	// 		{
-	// 			parr.pop_back();
-	// 		}
-	// 	}
-	// 	time(&t1);
-	// 	{
-	// 		vector<CPoly2 *> parr;
-	// 		parr.reserve(str_r.size());
-	// 		for (unsigned int i = 0; i < str_r.size(); i++)
-	// 		{
-	//
-	// 			parr.push_back(CPoly2::CreateData(str_r[i], f));
-	// 			if (!parr.back())
-	// 			{
-	// 				parr.pop_back();
-	// 			}
-	// 		}
-	// 		time(&t1);
-	// 		for (unsigned int i = 0; i < parr.size(); i++)
-	// 		{
-	// 			(*parr[i])--;
-	// 		}
-	// 		time(&t2);
-	// 		cout << "-- par: " << t2 - t1 << endl;
-	// 		for (unsigned int i = 0; i < parr.size(); i++)
-	// 		{
-	// 			parr[i]->output();
-	// 		}
-	// 		for (unsigned int i = 0; i < parr.size(); i++)
-	// 		{
-	// 			delete parr[i];
-	// 			parr[i] = nullptr;
-	// 		}
-	// 	}
-	// 	for (unsigned int i = 0; i < parr.size(); i++)
-	// 	{
-	// 		(*parr[i])--;
-	// 	}
-	// 	time(&t2);
-	// 	cout << "++ par: " << t2 - t1 << endl;
-	// 	for (unsigned int i = 0; i < parr.size(); i++)
-	// 	{
-	// 		parr[i]->output();
-	// 	}
-	// 	for (unsigned int i = 0; i < parr.size(); i++)
-	// 	{
-	// 		delete parr[i];
-	// 		parr[i] = nullptr;
-	// 	}
-	// }
-
 	{ //+
 		vector<CPoly2 *> parr;
 
@@ -672,33 +611,7 @@ int main()
 			parr[i] = nullptr;
 		}
 	} // + par
-	{
-		vector<CPoly2 *> parr;
-
-		parr.reserve(str_r.size());
-		for (unsigned int i = 0; i < str_r.size(); i++)
-		{
-			parr.push_back(CPoly2::CreateData(str_r[i], f));
-			if (!parr.back())
-			{
-				parr.pop_back();
-			}
-		}
-		CPoly2 *sum = new CData0();
-
-		for (vector<CPoly2 *>::iterator i_parr = parr.begin(); i_parr != parr.end(); i_parr++)
-		{
-			*sum = **i_parr + *sum;
-		}
-		sum->output();
-		delete sum;
-		for (unsigned int i = 0; i < parr.size(); i++) //gjiis
-		{
-			delete parr[i];
-			parr[i] = nullptr;
-		}
-	}
-	{
+	{ // []
 		vector<CPoly2 *> parr;
 		parr.reserve(str_r.size());
 		for (unsigned int i = 0; i < str_r.size(); i++)
@@ -727,7 +640,48 @@ int main()
 			delete parr[i];
 			parr[i] = nullptr;
 		}
-	}
+	} // []
+	{ // [] parr
+		vector<CPoly2 *> parr;
+		parr.reserve(str_r.size());
+		for (unsigned int i = 0; i < str_r.size(); i++)
+		{
+
+			parr.push_back(CPoly2::CreateData(str_r[i], f));
+			if (!parr.back())
+			{
+				parr.pop_back();
+			}
+		}
+		CPoly2 *tmp = new CData0(*parr[0]);
+		CPoly2 *tmp1 = new CData0(*parr[parr.size() / 2]);
+#pragma omp parallel sections shared(tmp, tmp1)
+		{
+#pragma omp section
+			for (unsigned int i = 0; i < parr.size() / 2 - 1; i++)
+			{
+				*parr[i] = *parr[i + 1];
+			}
+#pragma omp section
+			for (unsigned int i = parr.size() / 2; i < parr.size() - 1; i++)
+			{
+				*parr[i] = *parr[i + 1];
+			}
+		}
+		*parr[parr.size() - 1] = *tmp1;
+		*parr[parr.size() / 2 - 1] = *tmp;
+
+		delete tmp;
+		delete tmp1;
+		for (unsigned int i = 0; i < parr.size(); i++)
+		{
+			delete parr[i];
+			parr[i] = nullptr;
+		}
+	} // [] parr
+
+	fin.close();
+
 	for (unsigned int i = 0; i < 2; i++)
 	{
 		delete f[i];
