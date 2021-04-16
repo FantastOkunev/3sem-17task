@@ -77,7 +77,7 @@ public:
 	}
 	CPoly2(const CPoly2 &other)
 	{
-		cout << "конструктор копирования " << this << " " << &other << endl;
+		// cout << "конструктор копирования " << this << " " << &other << endl;
 		char *str = new char[strlen(other.cfname) + 1];
 		strcpy(str, other.cfname);
 		cfname = str;
@@ -94,7 +94,7 @@ public:
 	}
 	CPoly2(CPoly2 &&other)
 	{
-		cout << "конструктор перемещения " << this << " " << &other << endl;
+		// cout << "конструктор перемещения " << this << " " << &other << endl;
 
 		cfname = other.cfname;
 		other.cfname = nullptr;
@@ -105,11 +105,11 @@ public:
 	}
 	CPoly2 &operator=(const CPoly2 &other)
 	{
-		cout << "присваивание копированием " << this << " " << &other << endl;
+		// cout << "присваивание копированием " << this << " " << &other << endl;
 
 		if (this == &other)
 		{
-			cout << "a = a" << endl;
+			// cout << "a = a" << endl;
 			return *this;
 		}
 		delete_all();
@@ -130,7 +130,7 @@ public:
 	}
 	CPoly2 &operator=(CPoly2 &&other)
 	{
-		cout << "присваивание перемещением " << this << " " << &other << endl;
+		// cout << "присваивание перемещением " << this << " " << &other << endl;
 
 		delete_all();
 		N = other.N;
@@ -152,7 +152,7 @@ public:
 	CData0() : CPoly2() {}
 	CData0(const char *str, int **arr, int N) : CPoly2(arr, N, str)
 	{
-		cout << "дочерний конструктор \n";
+		// cout << "дочерний конструктор \n";
 	}
 	// ~CData0()
 	// {
@@ -160,7 +160,7 @@ public:
 
 	CData0(const CPoly2 &other) : CPoly2(other)
 	{
-		cout << "дочерний конструктор копирования \n";
+		// cout << "дочерний конструктор копирования \n";
 	}
 	// CData0(CPoly2 &&other) : CPoly2(other)
 	// {
@@ -246,7 +246,7 @@ CPoly2 *CPoly2::CreateData(char *str, CFabricData **f)
 	int **arr = nullptr;
 	int *tmp_arr = nullptr;
 	int *tmp_tmp_arr = nullptr;
-	char *pch = strtok(str, " \r"), *fname = nullptr;
+	char *pch = strtok(str, " \r"), *tmp_pch, *fname = nullptr;
 	if (pch == 0)
 	{
 		cout << "ошибка: пустая строка" << endl;
@@ -262,6 +262,8 @@ CPoly2 *CPoly2::CreateData(char *str, CFabricData **f)
 		return nullptr;
 	}
 	pch = strtok(nullptr, " \r");
+	tmp_pch = --pch;
+	*tmp_pch = ' ';
 	if (pch == 0)
 	{
 		cout << "ошибка: недостаточно данных" << endl;
@@ -272,6 +274,8 @@ CPoly2 *CPoly2::CreateData(char *str, CFabricData **f)
 	tmp_arr = new int[size_tmp_arr];
 	while ((pch = strtok(nullptr, " \r")))
 	{
+		tmp_pch = --pch;
+		*tmp_pch = ' ';
 		tmp_arr[len_tmp_arr] = digit(pch);
 		len_tmp_arr++;
 		if (len_tmp_arr == size_tmp_arr)
@@ -345,7 +349,6 @@ CData0 operator+(const CPoly2 &first, const CPoly2 &second)
 	}
 	CData0 val(nullptr, nullptr, 0);
 	CData0 sum(fname_sum, arr_sum, N_sum);
-	cout << "end sum\n";
 	return sum;
 }
 
@@ -424,7 +427,7 @@ CData0 operator++(CPoly2 &th, int)
 int main()
 {
 #ifdef _OPENMP
-	cout << _OPENMP;
+	cout << _OPENMP << endl;
 #endif
 	time_t t1, t2;
 	int len_str = 128;
@@ -457,31 +460,21 @@ int main()
 		}
 	}
 	delete[] str;
-	fin.close();
+	int NNN = 10 * 1000 * 1000;
+	size_arr_str = len_arr_str + NNN;
+	tmp_arr_str = new char *[size_arr_str];
+	for (int i = 0; i < len_arr_str; i++)
 	{
-		int len_parr = 0;
-
-		CPoly2 **parr = new CPoly2 *[len_arr_str];
-		for (int i = 0; i < len_arr_str; i++)
-		{
-			parr[len_parr] = CPoly2::CreateData(arr_str[i], f);
-			if (parr[len_parr] != 0)
-				len_parr++;
-		}
-
-		for (int i = 0; i < len_parr; i++)
-		{
-			parr[i]->output();
-		}
-		for (int i = 0; i < len_parr; i++)
-		{
-			delete parr[i];
-			parr[i] = nullptr;
-		}
-		delete[] parr;
-		parr = nullptr;
+		tmp_arr_str[i] = arr_str[i];
 	}
-
+	delete[] arr_str;
+	arr_str = tmp_arr_str;
+	for (int i = len_str; i < size_arr_str; i++)
+	{
+		arr_str[i] = new char[21];
+		strcpy(arr_str[i], "0 output.txt 1 2 3 4");
+	}
+	fin.close();
 	{ // ++
 		int len_parr = 0;
 
@@ -508,10 +501,8 @@ int main()
 		delete[] parr;
 		parr = nullptr;
 	} // ++
-
 	{ // ++ par
 		int len_parr = 0;
-
 		CPoly2 **parr = new CPoly2 *[len_arr_str];
 		for (int i = 0; i < len_arr_str; i++)
 		{
@@ -537,7 +528,6 @@ int main()
 	} // ++ par
 	{ // --
 		int len_parr = 0;
-
 		CPoly2 **parr = new CPoly2 *[len_arr_str];
 		for (int i = 0; i < len_arr_str; i++)
 		{
@@ -562,7 +552,6 @@ int main()
 	} // --
 	{ // -- par
 		int len_parr = 0;
-
 		CPoly2 **parr = new CPoly2 *[len_arr_str];
 		for (int i = 0; i < len_arr_str; i++)
 		{
@@ -578,7 +567,6 @@ int main()
 		}
 		time(&t2);
 		cout << "-- par: " << t2 - t1 << endl;
-
 		for (int i = 0; i < len_parr; i++)
 		{
 			delete parr[i];
@@ -589,7 +577,6 @@ int main()
 	} //-- par
 	{ //+
 		int len_parr = 0;
-
 		CPoly2 **parr = new CPoly2 *[len_arr_str];
 		for (int i = 0; i < len_arr_str; i++)
 		{
@@ -599,12 +586,10 @@ int main()
 		}
 		CPoly2 *sum = new CData0();
 		time(&t1);
-
 		for (int i = 0; i < len_parr; i++)
 		{
 			*sum = *parr[i] + *sum;
 		}
-
 		time(&t2);
 		cout << "+ : " << t2 - t1 << endl;
 		delete sum;
@@ -618,7 +603,6 @@ int main()
 	} // +
 	{ // + par
 		int len_parr = 0;
-
 		CPoly2 **parr = new CPoly2 *[len_arr_str];
 		for (int i = 0; i < len_arr_str; i++)
 		{
@@ -656,7 +640,6 @@ int main()
 	} // + par
 	{ // []
 		int len_parr = 0;
-
 		CPoly2 **parr = new CPoly2 *[len_arr_str];
 		for (int i = 0; i < len_arr_str; i++)
 		{
@@ -674,7 +657,6 @@ int main()
 		time(&t2);
 		cout << "[]:" << t2 - t1 << endl;
 		delete tmp;
-
 		for (int i = 0; i < len_parr; i++)
 		{
 			delete parr[i];
@@ -685,7 +667,6 @@ int main()
 	} // []
 	{ // [] parr
 		int len_parr = 0;
-
 		CPoly2 **parr = new CPoly2 *[len_arr_str];
 		for (int i = 0; i < len_arr_str; i++)
 		{
@@ -709,7 +690,6 @@ int main()
 				*parr[i] = *parr[i + 1];
 			}
 		}
-
 		*parr[len_parr - 1] = *tmp1;
 		*parr[len_parr / 2 - 1] = *tmp;
 		time(&t2);
@@ -725,7 +705,7 @@ int main()
 		parr = nullptr;
 	} // [] parr
 
-	for (int i = 0; i < len_arr_str; i++)
+	for (int i = 0; i < size_arr_str; i++)
 	{
 		delete[] arr_str[i];
 		arr_str[i] = nullptr;
