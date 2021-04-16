@@ -2,6 +2,8 @@
 #include <fstream>
 #include <cstring>
 #include <cmath>
+#include <ctime>
+#include <omp.h>
 
 using namespace std;
 
@@ -242,26 +244,32 @@ CPoly2 *CPoly2::CreateData(char *str, CFabricData **f)
 	CPoly2 *tmp = nullptr;
 	int N = 2, I = 1, len_tmp_arr = 0, size_tmp_arr = 4;
 	int **arr = nullptr;
-	int *tmp_arr = new int[size_tmp_arr];
+	int *tmp_arr = nullptr;
 	int *tmp_tmp_arr = nullptr;
 	char *pch = strtok(str, " \r"), *fname = nullptr;
 	if (pch == 0)
 	{
-		delete[] tmp_arr;
+		cout << "ошибка: пустая строка" << endl;
 		return nullptr;
-		size_tmp_arr++;
 	}
-	if (pch[0] == '0')
+	if (pch[0] == '0' and strlen(pch) == 1)
 		I = 0;
+	else if (pch[0] == '1' and strlen(pch) == 1)
+		I = 1;
+	else
+	{
+		cout << "ошибка: неверно указан тип вывода данных" << endl;
+		return nullptr;
+	}
 	pch = strtok(nullptr, " \r");
 	if (pch == 0)
 	{
-		delete[] tmp_arr;
+		cout << "ошибка: недостаточно данных" << endl;
 		return nullptr;
 	}
 	fname = new char[strlen(pch) + 1];
 	strcpy(fname, pch);
-
+	tmp_arr = new int[size_tmp_arr];
 	while ((pch = strtok(nullptr, " \r")))
 	{
 		tmp_arr[len_tmp_arr] = digit(pch);
@@ -280,6 +288,7 @@ CPoly2 *CPoly2::CreateData(char *str, CFabricData **f)
 	}
 	if (len_tmp_arr == 0)
 	{
+		cout << "ошибка: не введены данные" << endl;
 		delete[] fname;
 		delete[] tmp_arr;
 		return nullptr;
@@ -291,6 +300,7 @@ CPoly2 *CPoly2::CreateData(char *str, CFabricData **f)
 	N = ssqrt(len_tmp_arr);
 	if (len_tmp_arr != N * N)
 	{
+		cout << "ошибка: недостаточно значений" << endl;
 		delete[] fname;
 		delete[] tmp_arr;
 		return nullptr;
@@ -413,79 +423,70 @@ CData0 operator++(CPoly2 &th, int)
 
 int main()
 {
+#ifdef _OPENMP
+	cout << _OPENMP;
+#endif
 
-	int len_parr = 0, size_parr = 4;
-	char str[128];
+	int len_str = 128;
+	char *str = new char[len_str];
 	ofstream fout("output.txt", ios_base::trunc);
 	fout.close();
 	ifstream fin("input.txt");
 
 	CFabricData *f[2] = {new CFabricData0(), new CFabricData1()};
-	CPoly2 **parr = new CPoly2 *[size_parr], **tmp_parr = nullptr;
 
-	while (fin.getline(str, 127))
+	int len_arr_str = 0, size_arr_str = 4;
+	char **arr_str = new char *[size_arr_str];
+	char **tmp_arr_str = nullptr;
+
+	while (fin.getline(str, len_str - 1))
 	{
-
-		parr[len_parr] = CPoly2::CreateData(str, f);
-		if (parr[len_parr] != 0)
-			len_parr++;
-		if (len_parr == size_parr)
+		arr_str[len_arr_str] = new char[len_str];
+		strcpy(arr_str[len_arr_str], str);
+		len_arr_str++;
+		if (len_arr_str == size_arr_str)
 		{
-			size_parr *= 2;
-			tmp_parr = new CPoly2 *[size_parr];
-			for (int i = 0; i < len_parr; i++)
+			size_arr_str *= 2;
+			tmp_arr_str = new char *[size_arr_str];
+			for (int i = 0; i < len_arr_str; i++)
 			{
-				tmp_parr[i] = parr[i];
+				tmp_arr_str[i] = arr_str[i];
 			}
-			delete[] parr;
-			parr = tmp_parr;
+			delete[] arr_str;
+			arr_str = tmp_arr_str;
 		}
 	}
+	delete[] str;
 	fin.close();
-	for (int i = 0; i < len_parr; i++)
 	{
-		parr[i]->output();
-	}
-	CPoly2 *tmp = new CData0(*parr[0]);
-	for (int i = 0; i < len_parr - 1; i++)
-	{
-		*parr[i] = *parr[i + 1];
-	}
-	*parr[len_parr - 1] = *tmp;
-	CPoly2 *sum = new CData0();
-	sum->output();
-	for (int i = 0; i < len_parr; i++)
-	{
-		*sum = *parr[i] + *sum;
-		sum->output();
-	}
-	sum->output();
-	delete tmp;
-	delete sum;
+		int len_parr = 0;
 
-	for (int i = 0; i < len_parr; i++)
-	{
-		(*parr[i])++;
+		CPoly2 **parr = new CPoly2 *[len_arr_str];
+		for (int i = 0; i < len_arr_str; i++)
+		{
+			parr[len_parr] = CPoly2::CreateData(arr_str[i], f);
+			if (parr[len_parr] != 0)
+				len_parr++;
+		}
+
+		for (int i = 0; i < len_parr; i++)
+		{
+			parr[i]->output();
+		}
+		for (int i = 0; i < len_parr; i++)
+		{
+			delete parr[i];
+			parr[i] = nullptr;
+		}
+		delete[] parr;
+		parr = nullptr;
 	}
-	for (int i = 0; i < len_parr; i++)
+	for (int i = 0; i < len_arr_str; i++)
 	{
-		parr[i]->output();
+		delete[] arr_str[i];
+		arr_str[i] = nullptr;
 	}
-	for (int i = 0; i < len_parr; i++)
-	{
-		(*parr[i])--;
-	}
-	for (int i = 0; i < len_parr; i++)
-	{
-		parr[i]->output();
-	}
-	for (int i = 0; i < len_parr; i++)
-	{
-		delete parr[i];
-		parr[i] = nullptr;
-	}
-	delete[] parr;
-	parr = nullptr;
+	delete[] arr_str;
 	for (int i = 0; i < 2; i++)
 	{
 		delete f[i];
