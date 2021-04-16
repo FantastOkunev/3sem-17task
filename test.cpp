@@ -426,7 +426,7 @@ int main()
 #ifdef _OPENMP
 	cout << _OPENMP;
 #endif
-
+	time_t t1, t2;
 	int len_str = 128;
 	char *str = new char[len_str];
 	ofstream fout("output.txt", ios_base::trunc);
@@ -481,6 +481,250 @@ int main()
 		delete[] parr;
 		parr = nullptr;
 	}
+
+	{ // ++
+		int len_parr = 0;
+
+		CPoly2 **parr = new CPoly2 *[len_arr_str];
+		for (int i = 0; i < len_arr_str; i++)
+		{
+			parr[len_parr] = CPoly2::CreateData(arr_str[i], f);
+			if (parr[len_parr] != 0)
+				len_parr++;
+		}
+
+		time(&t1);
+		for (int i = 0; i < len_parr; i++)
+		{
+			(*parr[i])++;
+		}
+		time(&t2);
+		cout << "++: " << t2 - t1 << endl;
+		for (int i = 0; i < len_parr; i++)
+		{
+			delete parr[i];
+			parr[i] = nullptr;
+		}
+		delete[] parr;
+		parr = nullptr;
+	} // ++
+
+	{ // ++ par
+		int len_parr = 0;
+
+		CPoly2 **parr = new CPoly2 *[len_arr_str];
+		for (int i = 0; i < len_arr_str; i++)
+		{
+			parr[len_parr] = CPoly2::CreateData(arr_str[i], f);
+			if (parr[len_parr] != 0)
+				len_parr++;
+		}
+		time(&t1);
+#pragma omp parallel for
+		for (int i = 0; i < len_parr; i++)
+		{
+			(*parr[i])++;
+		}
+		time(&t2);
+		cout << "++ par: " << t2 - t1 << endl;
+		for (int i = 0; i < len_parr; i++)
+		{
+			delete parr[i];
+			parr[i] = nullptr;
+		}
+		delete[] parr;
+		parr = nullptr;
+	} // ++ par
+	{ // --
+		int len_parr = 0;
+
+		CPoly2 **parr = new CPoly2 *[len_arr_str];
+		for (int i = 0; i < len_arr_str; i++)
+		{
+			parr[len_parr] = CPoly2::CreateData(arr_str[i], f);
+			if (parr[len_parr] != 0)
+				len_parr++;
+		}
+		time(&t1);
+		for (int i = 0; i < len_parr; i++)
+		{
+			(*parr[i])--;
+		}
+		time(&t2);
+		cout << "--: " << t2 - t1 << endl;
+		for (int i = 0; i < len_parr; i++)
+		{
+			delete parr[i];
+			parr[i] = nullptr;
+		}
+		delete[] parr;
+		parr = nullptr;
+	} // --
+	{ // -- par
+		int len_parr = 0;
+
+		CPoly2 **parr = new CPoly2 *[len_arr_str];
+		for (int i = 0; i < len_arr_str; i++)
+		{
+			parr[len_parr] = CPoly2::CreateData(arr_str[i], f);
+			if (parr[len_parr] != 0)
+				len_parr++;
+		}
+		time(&t1);
+#pragma omp parallel for
+		for (int i = 0; i < len_parr; i++)
+		{
+			(*parr[i])--;
+		}
+		time(&t2);
+		cout << "-- par: " << t2 - t1 << endl;
+
+		for (int i = 0; i < len_parr; i++)
+		{
+			delete parr[i];
+			parr[i] = nullptr;
+		}
+		delete[] parr;
+		parr = nullptr;
+	} //-- par
+	{ //+
+		int len_parr = 0;
+
+		CPoly2 **parr = new CPoly2 *[len_arr_str];
+		for (int i = 0; i < len_arr_str; i++)
+		{
+			parr[len_parr] = CPoly2::CreateData(arr_str[i], f);
+			if (parr[len_parr] != 0)
+				len_parr++;
+		}
+		CPoly2 *sum = new CData0();
+		time(&t1);
+
+		for (int i = 0; i < len_parr; i++)
+		{
+			*sum = *parr[i] + *sum;
+		}
+
+		time(&t2);
+		cout << "+ : " << t2 - t1 << endl;
+		delete sum;
+		for (int i = 0; i < len_parr; i++) //gjiis
+		{
+			delete parr[i];
+			parr[i] = nullptr;
+		}
+		delete[] parr;
+		parr = nullptr;
+	} // +
+	{ // + par
+		int len_parr = 0;
+
+		CPoly2 **parr = new CPoly2 *[len_arr_str];
+		for (int i = 0; i < len_arr_str; i++)
+		{
+			parr[len_parr] = CPoly2::CreateData(arr_str[i], f);
+			if (parr[len_parr] != 0)
+				len_parr++;
+		}
+		CPoly2 *sum = new CData0(), *sum1 = new CData0();
+		time(&t1);
+#pragma omp parallel sections shared(sum, sum1)
+		{
+#pragma omp section
+			for (int i = 0; i < len_parr / 2; i++)
+			{
+				*sum = *parr[i] + *sum;
+			}
+#pragma omp section
+			for (int i = len_parr / 2; i < len_parr; i++)
+			{
+				*sum1 = *parr[i] + *sum1;
+			}
+		}
+		*sum = *sum + *sum1;
+		time(&t2);
+		cout << "+ par: " << t2 - t1 << endl;
+		delete sum;
+		delete sum1;
+		for (int i = 0; i < len_parr; i++) //gjiis
+		{
+			delete parr[i];
+			parr[i] = nullptr;
+		}
+		delete[] parr;
+		parr = nullptr;
+	} // + par
+	{ // []
+		int len_parr = 0;
+
+		CPoly2 **parr = new CPoly2 *[len_arr_str];
+		for (int i = 0; i < len_arr_str; i++)
+		{
+			parr[len_parr] = CPoly2::CreateData(arr_str[i], f);
+			if (parr[len_parr] != 0)
+				len_parr++;
+		}
+		CPoly2 *tmp = new CData0(*parr[0]);
+		time(&t1);
+		for (int i = 0; i < len_parr - 1; i++)
+		{
+			*parr[i] = *parr[i + 1];
+		}
+		*parr[len_parr - 1] = *tmp;
+		time(&t2);
+		cout << "[]:" << t2 - t1 << endl;
+		delete tmp;
+
+		for (int i = 0; i < len_parr; i++)
+		{
+			delete parr[i];
+			parr[i] = nullptr;
+		}
+		delete[] parr;
+		parr = nullptr;
+	} // []
+	{ // [] parr
+		int len_parr = 0;
+
+		CPoly2 **parr = new CPoly2 *[len_arr_str];
+		for (int i = 0; i < len_arr_str; i++)
+		{
+			parr[len_parr] = CPoly2::CreateData(arr_str[i], f);
+			if (parr[len_parr] != 0)
+				len_parr++;
+		}
+		CPoly2 *tmp = new CData0(*parr[0]);
+		CPoly2 *tmp1 = new CData0(*parr[len_parr / 2]);
+		time(&t1);
+#pragma omp parallel sections shared(tmp, tmp1)
+		{
+#pragma omp section
+			for (int i = 0; i < len_parr / 2 - 1; i++)
+			{
+				*parr[i] = *parr[i + 1];
+			}
+#pragma omp section
+			for (int i = len_parr / 2; i < len_parr - 1; i++)
+			{
+				*parr[i] = *parr[i + 1];
+			}
+		}
+
+		*parr[len_parr - 1] = *tmp1;
+		*parr[len_parr / 2 - 1] = *tmp;
+		time(&t2);
+		cout << "[] par: " << t2 - t1 << endl;
+		delete tmp;
+		delete tmp1;
+		for (int i = 0; i < len_parr; i++)
+		{
+			delete parr[i];
+			parr[i] = nullptr;
+		}
+		delete[] parr;
+		parr = nullptr;
+	} // [] parr
+
 	for (int i = 0; i < len_arr_str; i++)
 	{
 		delete[] arr_str[i];
