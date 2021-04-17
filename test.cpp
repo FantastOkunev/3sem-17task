@@ -31,17 +31,27 @@ private:
 		cfname = nullptr;
 		N = 0;
 	}
-	static int digit(char *str)
+	static int digit(char *str, int &error)
 	{
-		int d = 0;
+		int d = 0, sgn = 1;
 		char *uk = str;
+		if (str[0] == '-')
+		{
+			sgn = -1;
+			uk++;
+		}
 		while (*uk != '\0')
 		{
+			if (!isdigit(*uk))
+			{
+				error = 1;
+				return d;
+			}
 			d *= 10;
 			d += (int)*uk - 48;
 			uk++;
 		}
-		return d;
+		return d * sgn;
 	}
 
 	static int ssqrt(int N)
@@ -242,7 +252,7 @@ class CFabricData1 : public CFabricData
 CPoly2 *CPoly2::CreateData(char *str, CFabricData **f)
 {
 	CPoly2 *tmp = nullptr;
-	int N = 2, I = 1, len_tmp_arr = 0, size_tmp_arr = 4;
+	int N = 2, I = 1, len_tmp_arr = 0, size_tmp_arr = 4, error = 0;
 	int **arr = nullptr;
 	int *tmp_arr = nullptr;
 	int *tmp_tmp_arr = nullptr;
@@ -277,7 +287,14 @@ CPoly2 *CPoly2::CreateData(char *str, CFabricData **f)
 	{
 		tmp_pch = pch - 1;
 		*tmp_pch = ' ';
-		tmp_arr[len_tmp_arr] = digit(pch);
+		tmp_arr[len_tmp_arr] = digit(pch, error);
+		if (error)
+		{
+			cout << "ошибка: введено не число" << endl;
+			delete[] fname;
+			delete[] tmp_arr;
+			return nullptr;
+		}
 		len_tmp_arr++;
 		if (len_tmp_arr == size_tmp_arr)
 		{
@@ -479,7 +496,7 @@ int main()
 		}
 	}
 	delete[] str;
-	int NNN = 1000 * 100;
+	int NNN = 1;
 	size_arr_str = len_arr_str + NNN;
 	tmp_arr_str = new char *[size_arr_str];
 	for (int i = 0; i < len_arr_str; i++)
