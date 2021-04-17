@@ -425,6 +425,16 @@ CData0 operator++(CPoly2 &th, int)
 	return tmp;
 }
 
+void print_arr_str(char **arr_str, int len_arr_str)
+{
+	cout << endl;
+	for (int i = 0; i < len_arr_str; i++)
+	{
+		cout << arr_str[i] << endl;
+	}
+	cout << endl;
+}
+
 void print_all(CPoly2 **parr, int len_parr)
 {
 	for (int i = 0; i < len_parr; i++)
@@ -469,7 +479,7 @@ int main()
 		}
 	}
 	delete[] str;
-	int NNN = 5;
+	int NNN = 1000 * 100;
 	size_arr_str = len_arr_str + NNN;
 	tmp_arr_str = new char *[size_arr_str];
 	for (int i = 0; i < len_arr_str; i++)
@@ -478,12 +488,15 @@ int main()
 	}
 	delete[] arr_str;
 	arr_str = tmp_arr_str;
-	for (int i = len_str; i < size_arr_str; i++)
+	tmp_arr_str = nullptr;
+	for (int i = len_arr_str; i < size_arr_str; i++)
 	{
-		arr_str[i] = new char[21];
+		arr_str[i] = new char[25];
 		strcpy(arr_str[i], "0 output.txt 1 2 3 4");
 	}
+	len_arr_str = size_arr_str;
 	fin.close();
+
 	{ // ++
 		int len_parr = 0;
 
@@ -494,8 +507,6 @@ int main()
 			if (parr[len_parr] != 0)
 				len_parr++;
 		}
-		print_all(parr, len_parr);
-
 		time(&t1);
 		for (int i = 0; i < len_parr; i++)
 		{
@@ -511,6 +522,7 @@ int main()
 		delete[] parr;
 		parr = nullptr;
 	} // ++
+
 	{ // ++ par
 		int len_parr = 0;
 		CPoly2 **parr = new CPoly2 *[len_arr_str];
