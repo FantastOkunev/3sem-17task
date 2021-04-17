@@ -262,19 +262,20 @@ CPoly2 *CPoly2::CreateData(char *str, CFabricData **f)
 		return nullptr;
 	}
 	pch = strtok(nullptr, " \r");
-	tmp_pch = --pch;
-	*tmp_pch = ' ';
+
 	if (pch == 0)
 	{
 		cout << "ошибка: недостаточно данных" << endl;
 		return nullptr;
 	}
+	tmp_pch = pch - 1;
+	*tmp_pch = ' ';
 	fname = new char[strlen(pch) + 1];
 	strcpy(fname, pch);
 	tmp_arr = new int[size_tmp_arr];
 	while ((pch = strtok(nullptr, " \r")))
 	{
-		tmp_pch = --pch;
+		tmp_pch = pch - 1;
 		*tmp_pch = ' ';
 		tmp_arr[len_tmp_arr] = digit(pch);
 		len_tmp_arr++;
@@ -494,6 +495,7 @@ int main()
 				len_parr++;
 		}
 		print_all(parr, len_parr);
+
 		time(&t1);
 		for (int i = 0; i < len_parr; i++)
 		{
@@ -713,7 +715,7 @@ int main()
 		parr = nullptr;
 	} // [] parr
 
-	for (int i = 0; i < size_arr_str; i++)
+	for (int i = 0; i < len_arr_str; i++)
 	{
 		delete[] arr_str[i];
 		arr_str[i] = nullptr;
