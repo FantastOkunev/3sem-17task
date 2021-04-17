@@ -424,6 +424,14 @@ CData0 operator++(CPoly2 &th, int)
 	return tmp;
 }
 
+void print_all(CPoly2 **parr, int len_parr)
+{
+	for (int i = 0; i < len_parr; i++)
+	{
+		parr[i]->output();
+	}
+}
+
 int main()
 {
 #ifdef _OPENMP
@@ -460,7 +468,7 @@ int main()
 		}
 	}
 	delete[] str;
-	int NNN = 10 * 1000 * 1000;
+	int NNN = 5;
 	size_arr_str = len_arr_str + NNN;
 	tmp_arr_str = new char *[size_arr_str];
 	for (int i = 0; i < len_arr_str; i++)
@@ -485,7 +493,7 @@ int main()
 			if (parr[len_parr] != 0)
 				len_parr++;
 		}
-
+		print_all(parr, len_parr);
 		time(&t1);
 		for (int i = 0; i < len_parr; i++)
 		{
