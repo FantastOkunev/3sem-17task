@@ -496,7 +496,7 @@ int main()
 		}
 	}
 	delete[] str;
-	int NNN = 1;
+	int NNN = 1000 * 10000;
 	size_arr_str = len_arr_str + NNN;
 	tmp_arr_str = new char *[size_arr_str];
 	for (int i = 0; i < len_arr_str; i++)
