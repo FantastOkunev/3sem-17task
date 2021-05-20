@@ -462,12 +462,11 @@ void print_all(CPoly2 **parr, int len_parr)
 
 void reverse(CPoly2 **parr, int beg, int end)
 {
-	CPoly2 *tmp = nullptr;
 	for (int i = beg; i < (beg + end) / 2; i++)
 	{
-		tmp = parr[i];
-		parr[i] = parr[end - (i - beg) - 1];
-		parr[end - (i - beg) - 1] = tmp;
+		CData0 tmp = *parr[i];
+		*parr[i] = *parr[end - (i - beg) - 1];
+		*parr[end - (i - beg) - 1] = tmp;
 	}
 }
 
@@ -476,9 +475,9 @@ void reverse_par(CPoly2 **parr, int beg, int end)
 #pragma omp parallel for
 	for (int i = beg; i < (end + beg - 1) / 2; i++)
 	{
-		CPoly2 *tmp = parr[i];
-		parr[i] = parr[end - (i - beg) - 1];
-		parr[end - (i - beg) - 1] = tmp;
+		CData0 tmp = *parr[i];
+		*parr[i] = *parr[end - (i - beg) - 1];
+		*parr[end - (i - beg) - 1] = tmp;
 	}
 }
 
