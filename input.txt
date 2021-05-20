@@ -1,2 +1,6 @@
 0 output.txt 1  
-0 output.txt -1 2 3 4 1 1 1 1 1
+0 output.txt 2
+0 output.txt 3
+0 output.txt 4
+0 output.txt 5
+0 output.txt 6
